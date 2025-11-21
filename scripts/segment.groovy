@@ -4,6 +4,7 @@ import qupath.lib.images.ImageData
 import qupath.lib.images.servers.ColorTransforms
 import qupath.lib.roi.RectangleROI
 
+import static qupath.lib.scripting.QP.createFullImageAnnotation
 import static qupath.lib.scripting.QP.exportObjectsToGeoJson
 import static qupath.lib.scripting.QP.measurement
 
@@ -45,18 +46,23 @@ def stardist_segmentation = StarDist2D
         .measureIntensity()          // Add cell measurements (in all compartments)
         .build()
 
+def isTest = (args.size() > 1 && args[1] == 'test')
 
-//def pathObjects = createFullImageAnnotation(imageData, true)
-//stardist_segmentation.detectObjects(imageData, pathObjects, true)
+if (isTest) {
+    println "Running test"
+} else {
+    println "Running whole image"
+}
 
-// todo REMOVE
+def roi = isTest ?
+        new RectangleROI(20000, 20000, 100, 100) :
+        createFullImageAnnotation(imageData, true).getROI()
 
-def roi = new RectangleROI(20000, 20000, 100, 100)   // x, y, width, height
 def detected = stardist_segmentation.detectObjects(imageData, roi)
+
+
 println("Detected ${detected.size()} objects.")
 detected.removeAll { measurement(it, 'Area µm^2') < min_nuclei_area }
-
-// to here
 
 // Export the cell shapes as GeoJSON
 println 'Exporting cell shapes'
