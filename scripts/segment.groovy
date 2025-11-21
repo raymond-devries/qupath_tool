@@ -1,3 +1,4 @@
+import org.slf4j.LoggerFactory
 import qupath.ext.stardist.StarDist2D
 import qupath.lib.color.ColorDeconvolutionStains
 import qupath.lib.images.ImageData
@@ -8,7 +9,9 @@ import static qupath.lib.scripting.QP.createFullImageAnnotation
 import static qupath.lib.scripting.QP.exportObjectsToGeoJson
 import static qupath.lib.scripting.QP.measurement
 
-println 'Starting StarDist cell segmentation'
+def logger = LoggerFactory.getLogger("segment_logger")
+
+logger.info('Starting StarDist cell segmentation')
 def inputFile = new File("/data/${args[0]}")
 def server = new qupath.lib.images.servers.bioformats.BioFormatsServerBuilder().buildServer(inputFile.toURI())
 def imageData = new ImageData(server)
@@ -20,7 +23,7 @@ imageData.setColorDeconvolutionStains(ColorDeconvolutionStains.parseColorDeconvo
 def pixelSize = server.getPixelCalibration().getAveragedPixelSize()
 
 // Log the pixel size
-println "Pixel size from image metadata: ${pixelSize}"
+logger.info("Pixel size from image metadata: ${pixelSize}")
 
 min_nuclei_area = 10
 
@@ -49,9 +52,9 @@ def stardist_segmentation = StarDist2D
 def isTest = (args.size() > 1 && args[1] == 'test')
 
 if (isTest) {
-    println "Running test"
+    logger.info("Running test")
 } else {
-    println "Running whole image"
+    logger.info("Running whole image")
 }
 
 def roi = isTest ?
@@ -61,13 +64,13 @@ def roi = isTest ?
 def detected = stardist_segmentation.detectObjects(imageData, roi)
 
 
-println("Detected ${detected.size()} objects.")
+logger.info("Detected ${detected.size()} objects.")
 detected.removeAll { measurement(it, 'Area µm^2') < min_nuclei_area }
 
 // Export the cell shapes as GeoJSON
-println 'Exporting cell shapes'
+logger.info("Exporting cell shapes")
 
 def geoJsonPath = "/data/${args[0]}.json"
 exportObjectsToGeoJson(detected, geoJsonPath)
 
-println 'Done!'
+logger.info("Done!")
