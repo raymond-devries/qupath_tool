@@ -22,12 +22,10 @@ imageData.setColorDeconvolutionStains(ColorDeconvolutionStains.parseColorDeconvo
 
 def pixelSize = server.getPixelCalibration().getAveragedPixelSize()
 
-// Log the pixel size
 logger.info("Pixel size from image metadata: ${pixelSize}")
 
 min_nuclei_area = 10
 
-// Specify the model directory (you will need to change this!)
 def modelPath = "/scripts/models/stardist_model_1_channel.pb"
 def stardist_segmentation = StarDist2D
         .builder(modelPath)
@@ -67,8 +65,7 @@ def detected = stardist_segmentation.detectObjects(imageData, roi)
 logger.info("Detected ${detected.size()} objects.")
 detected.removeAll { measurement(it, 'Area µm^2') < min_nuclei_area }
 
-// Export the cell shapes as GeoJSON
-logger.info("Exporting cell shapes")
+logger.info("Exporting cell shapes to geo json")
 
 def geoJsonPath = "/data/${args[0]}.json"
 exportObjectsToGeoJson(detected, geoJsonPath)
