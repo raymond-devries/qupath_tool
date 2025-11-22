@@ -1,6 +1,5 @@
 import org.slf4j.LoggerFactory
 import qupath.ext.stardist.StarDist2D
-import qupath.lib.color.ColorDeconvolutionStains
 import qupath.lib.images.ImageData
 import qupath.lib.images.servers.ColorTransforms
 import qupath.lib.roi.RectangleROI
@@ -16,9 +15,6 @@ def inputFile = new File("/data/${args[0]}")
 def server = new qupath.lib.images.servers.bioformats.BioFormatsServerBuilder().buildServer(inputFile.toURI())
 def imageData = new ImageData(server)
 imageData.setImageType(ImageData.ImageType.BRIGHTFIELD_H_DAB)
-imageData.setColorDeconvolutionStains(ColorDeconvolutionStains.parseColorDeconvolutionStainsArg(
-        '{"Name" : "H-DAB default", "Stain 1" : "Hematoxylin", "Values 1" : "0.65111 0.70119 0.29049", "Stain 2" : "DAB", "Values 2" : "0.26917 0.56824 0.77759", "Background" : " 255 255 255"}'
-))
 
 def pixelSize = server.getPixelCalibration().getAveragedPixelSize()
 
@@ -42,7 +38,6 @@ def stardist_segmentation = StarDist2D
                 ColorTransforms.createColorDeconvolvedChannel(imageData.getColorDeconvolutionStains(), 1),
                 ColorTransforms.createColorDeconvolvedChannel(imageData.getColorDeconvolutionStains(), 2)
         )
-        .channels(1)
         .measureShape()              // Add shape measurements
         .measureIntensity()          // Add cell measurements (in all compartments)
         .build()
@@ -56,7 +51,7 @@ if (isTest) {
 }
 
 def roi = isTest ?
-        new RectangleROI(20000, 20000, 100, 100) :
+        new RectangleROI(imageData.getServer().getWidth()/2, imageData.getServer().getWidth()/2, 3000, 3000) :
         createFullImageAnnotation(imageData, true).getROI()
 
 def detected = stardist_segmentation.detectObjects(imageData, roi)

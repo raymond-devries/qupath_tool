@@ -1,0 +1,20 @@
+Bootstrap: docker
+From: ubuntu:noble
+
+%post
+# install needed dependencies
+    apt update -y
+    apt install curl wget xz-utils -y
+
+
+# Install latest QuPath release from GitHub
+    LATEST_VERSION=$(curl --silent -I https://github.com/qupath/qupath/releases/latest/ | grep location | awk -F/ '{print $NF'} | tr -d '\r')
+    wget https://github.com/qupath/qupath/releases/download/$LATEST_VERSION/QuPath-${LATEST_VERSION}-Linux.tar.xz
+    tar xvf QuPath-${LATEST_VERSION}-Linux.tar.xz
+    rm QuPath-${LATEST_VERSION}-Linux.tar.xz
+# set permissions to make it executable
+    chmod a+x QuPath/bin/QuPath
+# change max memory
+    sed -i 's/MaxRAMPercentage=50/MaxRAMPercentage=90/' /QuPath/lib/app/QuPath.cfg
+
+

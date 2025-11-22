@@ -1,9 +1,26 @@
-FROM quay.io/galaxy/qupath-headless:0.6.0-1
+FROM ubuntu:noble
+
+RUN apt update -y
+RUN apt install curl wget xz-utils -y
+
+RUN set -eux; \
+    LATEST_VERSION=$(curl --silent -I https://github.com/qupath/qupath/releases/latest/ \
+        | grep location \
+        | awk -F/ '{print $NF}' \
+        | tr -d '\r'); \
+    echo "Latest version: $LATEST_VERSION"; \
+    wget "https://github.com/qupath/qupath/releases/download/${LATEST_VERSION}/QuPath-${LATEST_VERSION}-Linux.tar.xz"; \
+    tar xvf "QuPath-${LATEST_VERSION}-Linux.tar.xz"; \
+    rm "QuPath-${LATEST_VERSION}-Linux.tar.xz"; \
+    chmod a+x /QuPath/bin/QuPath; \
+    sed -i 's/MaxRAMPercentage=50/MaxRAMPercentage=90/' /QuPath/lib/app/QuPath.cfg
+
+COPY extensions /scripts/userdir/extensions
 
 COPY scripts/prefs.groovy /scripts/prefs.groovy
-RUN /opt/qupath/QuPath/bin/QuPath script /scripts/prefs.groovy
+RUN /QuPath/bin/QuPath script /scripts/prefs.groovy
 
 COPY scripts/segment.groovy /scripts/segment.groovy
 COPY scripts/models/stardist_model_1_channel.pb /scripts/models/stardist_model_1_channel.pb
 
-ENTRYPOINT ["/opt/qupath/QuPath/bin/QuPath", "script", "/scripts/segment.groovy", "--args"]
+ENTRYPOINT ["/QuPath/bin/QuPath", "script", "/scripts/segment.groovy", "--args"]

@@ -1,0 +1,14 @@
+Bootstrap: localimage
+From: qupath_base.sif
+
+%files
+    scripts/prefs.groovy /scripts/prefs.groovy
+    scripts/segment.groovy /scripts/segment.groovy
+    scripts/models/stardist_model_1_channel.pb /scripts/models/stardist_model_1_channel.pb
+
+    extensions /scripts/userdir/extensions
+
+%runscript
+    /QuPath/bin/QuPath script /scripts/prefs.groovy
+    /QuPath/bin/QuPath script /scripts/segment.groovy --args $*
+
