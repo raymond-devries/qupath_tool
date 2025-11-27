@@ -28,6 +28,7 @@ apptainer push qupath_tool.sif oras://ghcr.io/raymond-devries/qupath_tool:apptai
 ```
 
 **Run examples**
+
 Get help
 ```shell
 apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif --help
@@ -40,5 +41,5 @@ apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif 
 
 Run on single image
 ```shell
-apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif image.vsi segment 10 0.5
+apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif segment image.vsi 10 0.5
 ```

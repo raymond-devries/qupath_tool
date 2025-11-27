@@ -8,8 +8,21 @@ From: qupath_base.sif
 
     extensions /scripts/userdir/extensions
 
+    cli/.python-version /cli/.python-version
+    cli/pyproject.toml /cli/pyproject.toml
+    cli/uv.lock /cli/uv.lock
+
     cli/main.py /cli/main.py
 
+%post
+    # install needed dependencies
+    curl -LsSf https://astral.sh/uv/install.sh | env UV_UNMANAGED_INSTALL="/cli" sh
+    chmod +x /cli/uv
+    cd /cli
+    which python
+    /cli/uv export --frozen | /cli/uv pip install --system -r -
+    rm /cli/uv /cli/uvx
+
 %runscript
-    python3 /cli/main.py $*
+    python /cli/main.py $*
 

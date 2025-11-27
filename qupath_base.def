@@ -1,11 +1,10 @@
 Bootstrap: docker
-From: ubuntu:noble
+From: python:3.13-slim
 
 %post
 # install needed dependencies
-    apt update -y
-    apt install curl wget xz-utils python3 python3-pip -y
-    pip3 install --break-system-packages typer
+    apt-get update -y
+    apt-get install -y curl wget xz-utils
 
 # Install latest QuPath release from GitHub
     LATEST_VERSION=$(curl --silent -I https://github.com/qupath/qupath/releases/latest/ | grep location | awk -F/ '{print $NF'} | tr -d '\r')
@@ -17,4 +16,6 @@ From: ubuntu:noble
 # change max memory
     sed -i 's/MaxRAMPercentage=50/MaxRAMPercentage=90/' /QuPath/lib/app/QuPath.cfg
 
-
+    apt-get purge -y --auto-remove wget xz-utils
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
