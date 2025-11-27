@@ -10,8 +10,13 @@ import static qupath.lib.scripting.QP.measurement
 
 def logger = LoggerFactory.getLogger("segment_logger")
 
+def filePath = args[0]
+def testFlag = args[1]
+def minNucleiArea = args[2] as int
+def threshold = args[3] as double
+
 logger.info('Starting StarDist cell segmentation')
-def inputFile = new File("/data/${args[0]}")
+def inputFile = new File("/data/${filePath}")
 def server = new qupath.lib.images.servers.bioformats.BioFormatsServerBuilder().buildServer(inputFile.toURI())
 def imageData = new ImageData(server)
 imageData.setImageType(ImageData.ImageType.BRIGHTFIELD_H_DAB)
@@ -19,8 +24,6 @@ imageData.setImageType(ImageData.ImageType.BRIGHTFIELD_H_DAB)
 def pixelSize = server.getPixelCalibration().getAveragedPixelSize()
 
 logger.info("Pixel size from image metadata: ${pixelSize}")
-
-min_nuclei_area = 10
 
 def modelPath = "/scripts/models/stardist_model_1_channel.pb"
 def stardist_segmentation = StarDist2D
@@ -31,7 +34,7 @@ def stardist_segmentation = StarDist2D
                         .percentiles(1, 99.8)  // Calculate image percentiles to use for normalization
                         .build()
         )
-        .threshold(0.2)              // Prediction threshold
+        .threshold(threshold)              // Prediction threshold
         .includeProbability(true)    // Include prediction probability as measurement
         .pixelSize(0.5)              // Resolution for detection
         .channels(
@@ -42,8 +45,7 @@ def stardist_segmentation = StarDist2D
         .measureIntensity()          // Add cell measurements (in all compartments)
         .build()
 
-def isTest = (args.size() > 1 && args[1] == 'test')
-
+def isTest = testFlag == 'test'
 if (isTest) {
     logger.info("Running test")
 } else {
@@ -58,11 +60,11 @@ def detected = stardist_segmentation.detectObjects(imageData, roi)
 
 
 logger.info("Detected ${detected.size()} objects.")
-detected.removeAll { measurement(it, 'Area µm^2') < min_nuclei_area }
+detected.removeAll { measurement(it, 'Area µm^2') < minNucleiArea }
 
 logger.info("Exporting cell shapes to geo json")
 
-def geoJsonPath = "/data/${args[0]}.json"
+def geoJsonPath = "/data/${filePath}.json"
 exportObjectsToGeoJson(detected, geoJsonPath)
 
 logger.info("Done!")

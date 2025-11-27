@@ -8,7 +8,8 @@ From: qupath_base.sif
 
     extensions /scripts/userdir/extensions
 
+    cli/main.py /cli/main.py
+
 %runscript
-    /QuPath/bin/QuPath script /scripts/prefs.groovy
-    /QuPath/bin/QuPath script /scripts/segment.groovy --args $*
+    python3 /cli/main.py $*
 
