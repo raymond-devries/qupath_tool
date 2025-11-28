@@ -3,8 +3,11 @@ import os
 from pathlib import Path
 
 import typer
+from rich.console import Console
+from rich.table import Table
 
 app = typer.Typer()
+console = Console()
 
 
 @app.command()
@@ -19,7 +22,7 @@ def segment(file: str, min_nuclei_area: int, threshold: float, test: bool = Fals
 
 @app.command()
 def sbatch_script(min_nuclei_area: int, threshold: float, test: bool = False):
-    print("Generating scripts for sbatch")
+    console.print("[bold green]Generating scripts for sbatch[/bold green]")
     test_arg = " --test" if test else ""
     sbatch_script_content = inspect.cleandoc(f"""
         #!/bin/bash
@@ -45,6 +48,24 @@ def sbatch_script(min_nuclei_area: int, threshold: float, test: bool = False):
 
     with open("/data/all_files.sh", "w") as f:
         f.write(all_files_script + "\n")
+
+    # Display table of files to be processed
+    table = Table(title="Files to be Processed")
+    table.add_column("Index", justify="right", style="cyan", no_wrap=True)
+    table.add_column("Filename", style="magenta")
+
+    for idx, vsi_file in enumerate(vsi_files, 1):
+        table.add_row(str(idx), vsi_file.name)
+
+    console.print(table)
+    console.print(f"\n[bold]Total files:[/bold] {len(vsi_files)}")
+
+    # Display instructions
+    console.print("\n[bold yellow]Next steps:[/bold yellow]")
+    console.print("  1. Make the script executable:")
+    console.print("     [cyan]chmod +x all_files.sh[/cyan]")
+    console.print("  2. Run the batch script:")
+    console.print("     [cyan]./all_files.sh[/cyan]")
 
 
 if __name__ == "__main__":
