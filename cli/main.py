@@ -41,10 +41,10 @@ def sbatch_script(min_nuclei_area: int, threshold: float, test: bool = False):
     """)
 
     with open("/data/process.sh", "w") as f:
-        f.write(sbatch_script_content + '\n')
+        f.write(sbatch_script_content + "\n")
 
     with open("/data/all_files.sh", "w") as f:
-        f.write(all_files_script + '\n')
+        f.write(all_files_script + "\n")
 
 
 if __name__ == "__main__":
