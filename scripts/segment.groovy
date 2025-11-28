@@ -1,3 +1,5 @@
+import static qupath.lib.scripting.QP.*
+
 import org.slf4j.LoggerFactory
 import qupath.ext.stardist.StarDist2D
 import qupath.lib.images.ImageData
@@ -7,9 +9,7 @@ import qupath.lib.objects.PathObjects
 import qupath.lib.roi.ROIs
 import qupath.opencv.ml.pixel.PixelClassifierTools
 
-import static qupath.lib.scripting.QP.*
-
-def logger = LoggerFactory.getLogger("segment_logger")
+def logger = LoggerFactory.getLogger('segment_logger')
 
 def filePath = args[0]
 def testFlag = args[1]
@@ -22,8 +22,7 @@ def server = ImageServers.buildServer(inputFile.toURI().toString())
 def imageData = new ImageData(server)
 imageData.setImageType(ImageData.ImageType.BRIGHTFIELD_H_DAB)
 
-
-def classifier = loadPixelClassifier("/scripts/tumor_classifier.json")
+def classifier = loadPixelClassifier('/scripts/tumor_classifier.json')
 def classifierServer = PixelClassifierTools.createPixelClassificationServer(imageData, classifier)
 def cellClumps = PixelClassifierTools.createObjectsFromPixelClassifier(classifierServer, null, null, { roi -> PathObjects.createDetectionObject(roi) }, 0.0, 0.0, true)
 
@@ -41,7 +40,7 @@ if (!outputDir.exists()) {
     logger.info("Created output directory: ${outputDir.absolutePath}")
 }
 
-def modelPath = "/scripts/models/stardist_model_1_channel.pb"
+def modelPath = '/scripts/models/stardist_model_1_channel.pb'
 def stardist_segmentation = StarDist2D
         .builder(modelPath)
         .preprocessGlobal(                 // Apply normalization, calculating values across the whole image
@@ -77,7 +76,7 @@ cellClumps.eachWithIndex { clump, index ->
         logger.info("Test mode: Using 2000x2000 circle ROI centered at (${centerX}, ${centerY})")
     } else {
         roiToUse = clumpROI
-        logger.info("Production mode: Using full clump ROI")
+        logger.info('Production mode: Using full clump ROI')
     }
 
     def detected = stardist_segmentation.detectObjects(imageData, roiToUse)

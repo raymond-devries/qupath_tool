@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.1
+    hooks:
+      - id: ruff
+        name: ruff (CLI folder)
+        args: [--fix]
+        files: ^cli/
+      - id: ruff-format
+        name: ruff format (CLI folder)
+        files: ^cli/
+
+  - repo: https://github.com/nvuillam/npm-groovy-lint
+    rev: v14.6.0
+    hooks:
+      - id: format-npm-groovy-lint
+        name: npm-groovy-lint (scripts folder)
+        args: [--failon, error]
+        files: ^scripts/.*\.groovy$
