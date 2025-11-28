@@ -39,7 +39,7 @@ def sbatch_script(min_nuclei_area: int, threshold: float, test: bool = False):
 
         for file in $files; do
             echo "Batching $file"
-            sbatch process.sh $file
+            sbatch -c 8 process.sh $file
         done
     """)
 
