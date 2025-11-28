@@ -23,11 +23,17 @@ def segment(file: str, min_nuclei_area: int, threshold: float, test: bool = Fals
 @app.command()
 def sbatch_script(min_nuclei_area: int, threshold: float, test: bool = False):
     console.print("[bold green]Generating scripts for sbatch[/bold green]")
-    test_arg = " --test" if test else ""
+
+    cmd_args = ["$1", str(min_nuclei_area), str(threshold)]
+    if test:
+        cmd_args.append("--test")
+
+    cmd_line = " ".join(cmd_args)
+
     sbatch_script_content = inspect.cleandoc(f"""
         #!/bin/bash
         ml Apptainer
-        apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif segment $1 {min_nuclei_area} {threshold}{test_arg}
+        apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif segment {cmd_line}
     """)
 
     data_files = Path("/data")
