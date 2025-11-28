@@ -1,6 +1,6 @@
+import inspect
 import os
 from pathlib import Path
-from textwrap import dedent
 
 import typer
 
@@ -21,28 +21,30 @@ def segment(file: str, min_nuclei_area: int, threshold: float, test: bool = Fals
 def sbatch_script(min_nuclei_area: int, threshold: float, test: bool = False):
     print("Generating scripts for sbatch")
     test_arg = " --test" if test else ""
-    sbatch_script = f"""#!/bin/bash
-    ml Apptainer
-    apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif segment $1 {min_nuclei_area} {threshold}{test_arg}
-    """
+    sbatch_script_content = inspect.cleandoc(f"""
+        #!/bin/bash
+        ml Apptainer
+        apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif segment $1 {min_nuclei_area} {threshold}{test_arg}
+    """)
 
     data_files = Path("/data")
     vsi_files = list(data_files.glob("*.vsi"))
     files_arg = " ".join(file.name for file in vsi_files if file.is_file())
-    all_files_script = f"""#!/bin/bash
-    files="{files_arg}"
-    
-    for file in $files; do
-        echo "Batching $file"
-        sbatch process.sh $file
-    done
-    """
+    all_files_script = inspect.cleandoc(f"""
+        #!/bin/bash
+        files="{files_arg}"
+
+        for file in $files; do
+            echo "Batching $file"
+            sbatch process.sh $file
+        done
+    """)
 
     with open("/data/process.sh", "w") as f:
-        f.write(dedent(sbatch_script))
+        f.write(sbatch_script_content + '\n')
 
     with open("/data/all_files.sh", "w") as f:
-        f.write(dedent(all_files_script))
+        f.write(all_files_script + '\n')
 
 
 if __name__ == "__main__":

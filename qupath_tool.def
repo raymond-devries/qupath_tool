@@ -5,6 +5,7 @@ From: qupath_base.sif
     scripts/prefs.groovy /scripts/prefs.groovy
     scripts/segment.groovy /scripts/segment.groovy
     scripts/models/stardist_model_1_channel.pb /scripts/models/stardist_model_1_channel.pb
+    scripts/tumor_classifier.json /scripts/tumor_classifier.json
 
     extensions /scripts/userdir/extensions
 

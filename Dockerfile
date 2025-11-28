@@ -27,8 +27,9 @@ COPY extensions /scripts/userdir/extensions
 COPY scripts/prefs.groovy /scripts/prefs.groovy
 RUN /QuPath/bin/QuPath script /scripts/prefs.groovy
 
-COPY scripts/segment.groovy /scripts/segment.groovy
 COPY scripts/models/stardist_model_1_channel.pb /scripts/models/stardist_model_1_channel.pb
+COPY scripts/tumor_classifier.json /scripts/tumor_classifier.json
+COPY scripts/segment.groovy /scripts/segment.groovy
 
 COPY cli/main.py /cli/main.py
 
