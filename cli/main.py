@@ -65,10 +65,12 @@ def sbatch_script(min_nuclei_area: int, threshold: float, test: bool = False):
 
     console.print(table)
     console.print(f"\n[bold]Total files:[/bold] {len(vsi_files)}")
+    console.print(f"Min nuclei area: {min_nuclei_area}")
+    console.print(f"Threshold: {threshold}")
 
     # Display instructions
     console.print("\n[bold yellow]Next steps:[/bold yellow]")
-    console.print("  1. Make the script executable:")
+    console.print("  1. Make all_files.sh executable:")
     console.print("     [cyan]chmod +x all_files.sh[/cyan]")
     console.print("  2. Run the batch script:")
     console.print("     [cyan]./all_files.sh[/cyan]")
