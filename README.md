@@ -22,6 +22,11 @@ apptainer build qupath_base.sif qupath_base.def
 apptainer build qupath_tool.sif qupath_tool.def  
 ```
 
+**Pull**
+```shell
+apptainer pull oras://ghcr.io/raymond-devries/qupath_tool:apptainer-latest
+```
+
 **Push**
 ```shell
 apptainer push qupath_tool.sif oras://ghcr.io/raymond-devries/qupath_tool:apptainer-latest
