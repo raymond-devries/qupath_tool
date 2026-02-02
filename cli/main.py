@@ -58,6 +58,7 @@ def _sbatch(command: str, file_type: str):
     table = Table(title="Files to be Processed")
     table.add_column("Index", justify="right", style="cyan", no_wrap=True)
     table.add_column("Filename", style="magenta")
+    console.print(table)
 
     for idx, vsi_file in enumerate(vsi_files, 1):
         table.add_row(str(idx), vsi_file.name)
