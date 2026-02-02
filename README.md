@@ -39,12 +39,28 @@ Get help
 apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif --help
 ```
 
-Get sbatch scripts
+**Built in segment script**
+
+Get sbatch segment
 ```shell
 apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif sbatch-script 10 0.5
 ```
 
-Run on single image
+Run segment on single image
 ```shell
 apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif segment image.vsi 10 0.5
+```
+
+**Custom script**
+
+All custom script must accept one argument: the file path of the image the script will be run on. 
+
+Get sbatch custom script
+```shell
+apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif sbatch-script custom_script.groovy vsi
+```
+
+Run custom script on a single image
+```shell
+apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif script image.vsi
 ```
