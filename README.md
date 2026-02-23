@@ -46,9 +46,19 @@ Get sbatch segment
 apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif sbatch-segment 10 0.5
 ```
 
+Get sbatch segment for a specific series within each VSI file
+```shell
+apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif sbatch-segment 10 0.5 --series-index 1
+```
+
 Run segment on single image
 ```shell
 apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif segment image.vsi 10 0.5
+```
+
+Run segment on single image, selecting a specific series (image) within the VSI file (0-indexed, defaults to 0)
+```shell
+apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif segment image.vsi 10 0.5 --series-index 1
 ```
 
 **Custom script**

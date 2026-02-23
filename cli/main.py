@@ -11,10 +11,25 @@ console = Console()
 
 
 @app.command()
-def segment(file: str, min_nuclei_area: int, threshold: float, test: bool = False):
+def segment(
+    file: str,
+    min_nuclei_area: int,
+    threshold: float,
+    test: bool = False,
+    series_index: int = typer.Option(
+        2,
+        help="Index of the image series to use within the VSI file (0-indexed). Typically 2 for the full-resolution image.",
+    ),
+):
     os.system("/QuPath/bin/QuPath script /scripts/prefs.groovy")
 
-    args = (file, "test" if test else "not_test", min_nuclei_area, threshold)
+    args = (
+        file,
+        "test" if test else "not_test",
+        min_nuclei_area,
+        threshold,
+        series_index,
+    )
     arg_str = " --args ".join(str(a) for a in args)
     print(arg_str)
     os.system(f"/QuPath/bin/QuPath script /scripts/segment.groovy --args {arg_str}")
@@ -73,18 +88,27 @@ def _sbatch(command: str, file_type: str):
 
 
 @app.command()
-def sbatch_segment(min_nuclei_area: int, threshold: float, test: bool = False):
+def sbatch_segment(
+    min_nuclei_area: int,
+    threshold: float,
+    test: bool = False,
+    series_index: int = typer.Option(
+        2,
+        help="Index of the image series to use within the VSI file (0-indexed). Typically 2 for the full-resolution image.",
+    ),
+):
     console.print("[bold green]Generating scripts for sbatch[/bold green]")
 
     cmd_args = ["$1", str(min_nuclei_area), str(threshold)]
     if test:
         cmd_args.append("--test")
+    cmd_args.extend(["--series-index", str(series_index)])
 
     cmd_line = " ".join(cmd_args)
 
     _sbatch(
         f'apptainer run --fakeroot --bind "$(pwd):/data" '
-        f'qupath_tool_apptainer-latest.sif segment {cmd_line}',
+        f"qupath_tool_apptainer-latest.sif segment {cmd_line}",
         "vsi",
     )
 
@@ -96,7 +120,7 @@ def sbatch_segment(min_nuclei_area: int, threshold: float, test: bool = False):
 def sbatch_script(script_path: str, file_type: str):
     _sbatch(
         f'apptainer run --fakeroot --bind "$(pwd):/data" '
-        f'qupath_tool_apptainer-latest.sif script {script_path} $1',
+        f"qupath_tool_apptainer-latest.sif script {script_path} $1",
         file_type,
     )
 

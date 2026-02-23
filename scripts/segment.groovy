@@ -15,10 +15,12 @@ def filePath = args[0]
 def testFlag = args[1]
 def minNucleiArea = args[2] as int
 def threshold = args[3] as double
+def seriesIndex = args[4] as int
 
 logger.info('Starting StarDist cell segmentation')
+logger.info("Using series index: ${seriesIndex}")
 def inputFile = new File("/data/${filePath}")
-def server = ImageServers.buildServer(inputFile.toURI().toString())
+def server = ImageServers.buildServer(inputFile.toURI().toString(), '--series', seriesIndex.toString())
 def imageData = new ImageData(server)
 imageData.setImageType(ImageData.ImageType.BRIGHTFIELD_H_DAB)
 
