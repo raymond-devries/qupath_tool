@@ -43,7 +43,7 @@ apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif 
 
 Get sbatch segment
 ```shell
-apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif sbatch-script 10 0.5
+apptainer run --fakeroot --bind "$(pwd):/data" qupath_tool_apptainer-latest.sif sbatch-segment 10 0.5
 ```
 
 Run segment on single image
